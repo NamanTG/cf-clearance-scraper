@@ -5,4 +5,4 @@ services:
     restart: on-failure
     ports:
       - "3000:3000"
-    mem_limit: 1g
+    mem_limit: 4g
