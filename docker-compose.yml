@@ -1,0 +1,8 @@
+services:
+  app:
+    build: .
+    command: pm2-runtime src/index.js
+    restart: on-failure
+    ports:
+      - "3000:3000"
+    mem_limit: 1g
