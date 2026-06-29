@@ -1,4 +1,4 @@
-FROM node:latest
+FROM node:20-bookworm
 
 # Install dependencies and Google Chrome stable
 RUN apt-get update && apt-get install -y \
