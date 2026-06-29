@@ -28,6 +28,6 @@ RUN npm i -g pm2
 
 COPY . .
 
-EXPOSE 2000
+EXPOSE 3000
 
 CMD ["pm2-runtime", "src/index.js"]
