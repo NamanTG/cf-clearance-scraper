@@ -41,25 +41,44 @@ function getSource({ url, proxy }) {
       let acceptLanguage = await findAcceptLanguage(page);
       await page.setRequestInterception(true);
       page.on("request", async (request) => request.continue());
+
+      
+      let cfChallengeSeen = false;
+
       page.on("response", async (res) => {
+        console.log(res.url());
         try {
+          const resUrl = new URL(res.url());
+      
+          if (resUrl.searchParams.has("__cf_chl_f_tk")) {
+            cfChallengeSeen = true;
+          }
+      
+          const targetHost = new URL(url).hostname;
+          const responseHost = new URL(res.url()).hostname;
+          
           if (
             [200, 302].includes(res.status()) &&
-            [url, url + "/"].includes(res.url())
+            cfChallengeSeen &&
+            responseHost === targetHost
           ) {
             await page
               .waitForNavigation({ waitUntil: "load", timeout: 5000 })
               .catch(() => {});
+      
             const cookies = await page.cookies();
             let headers = await res.request().headers();
+      
             delete headers["content-type"];
             delete headers["accept-encoding"];
             delete headers["accept"];
             delete headers["content-length"];
+      
             headers["accept-language"] = acceptLanguage;
+      
             await context.close();
             isResolved = true;
-            clearInterval(cl);
+            clearTimeout(cl);
             resolve({ cookies, headers });
           }
         } catch (e) {}
