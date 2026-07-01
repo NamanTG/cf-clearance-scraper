@@ -11,6 +11,10 @@ async function findAcceptLanguage(page) {
   });
 }
 
+function getMainDomain(hostname) {
+  return hostname.split('.').slice(-2).join('.');
+}
+
 function getSource({ url, proxy }) {
   return new Promise(async (resolve, reject) => {
     if (!url) return reject("Missing url parameter");
@@ -54,8 +58,8 @@ function getSource({ url, proxy }) {
             cfChallengeSeen = true;
           }
       
-          const targetHost = new URL(url).hostname;
-          const responseHost = new URL(res.url()).hostname;
+          const targetHost = getMainDomain(new URL(url).hostname);
+          const responseHost = getMainDomain(new URL(res.url()).hostname);
           
           if (
             [200, 302].includes(res.status()) &&
